@@ -1,4 +1,3 @@
-const axios = require('axios');
 const models = require('./models');
 
 module.exports = {
@@ -11,5 +10,17 @@ module.exports = {
     models
       .incrementViewCount(req.body.id)
       .then(() => res.sendStatus(201));
+  },
+  updateLikes(req, res) {
+    const { id } = req.body;
+    const promises = [];
+    if (req.body.likes !== undefined) {
+      promises.push(models.updateLikes(id, req.body.likes));
+    }
+    if (req.body.dislikes !== undefined) {
+      promises.push(models.updateDislikes(id, req.body.dislikes));
+    }
+
+    Promise.all(promises).then(() => res.sendStatus(201));
   },
 };

@@ -34,6 +34,7 @@ app.use(express.json());
 
 app.get('/api/posts', controllers.getAllPosts);
 app.put('/api/views', controllers.incrementViewCount);
+app.put('/api/likes', controllers.updateLikes);
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     const b64 = Buffer.from(req.file.buffer).toString('base64');
