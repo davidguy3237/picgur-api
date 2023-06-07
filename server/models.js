@@ -1,8 +1,8 @@
 const pool = require('./db');
 
 module.exports = {
-  getAllPosts() {
-    const query = 'SELECT * FROM posts';
+  getAllPosts(search) {
+    const query = `SELECT * FROM posts WHERE title ILIKE '%${search}%'`;
     return pool
       .query(query)
       .then((results) => results.rows)

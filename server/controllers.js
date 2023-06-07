@@ -2,8 +2,9 @@ const models = require('./models');
 
 module.exports = {
   getAllPosts(req, res) {
+    const search = req.query.search || '';
     models
-      .getAllPosts()
+      .getAllPosts(search)
       .then((results) => res.json(results));
   },
   incrementViewCount(req, res) {
