@@ -7,7 +7,27 @@ module.exports = {
       .query(query)
       .then((results) => results.rows)
       .catch((err) => {
-        throw new Error(`PROBLEM GETTING POSTS ${err.stack}`)
+        throw new Error(`PROBLEM GETTING POSTS: ${err.stack}`);
       });
   },
+  addPost(title, url) {
+    const query = 'INSERT INTO posts(title, url) VALUES($1, $2)';
+    const values = [title, url];
+    return pool
+      .query(query, values)
+      .then((results) => results.rows)
+      .catch((err) => {
+        throw new Error(`PROBLEM ADDING NEW POST: ${err.stack}`);
+      });
+  },
+  incrementViewCount(id) {
+    const query = 'UPDATE posts SET views = views + 1 WHERE id=$1';
+    const values = [id];
+    return pool
+      .query(query, values)
+      .then((results) => results.rows)
+      .catch((err) => {
+        throw new Error(`PROBLEM INCREMENTING VIEW COUNT: ${err.stack}`);
+      });
+  }
 };
