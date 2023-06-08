@@ -11,7 +11,7 @@ module.exports = {
       });
   },
   addPost(title, url) {
-    const query = 'INSERT INTO posts(title, url) VALUES($1, $2)';
+    const query = 'INSERT INTO posts(title, url) VALUES($1, $2) RETURNING *';
     const values = [title, url];
     return pool
       .query(query, values)
@@ -46,5 +46,48 @@ module.exports = {
       .catch((err) => {
         throw new Error(`PROBLEM UPDATING DISLIKES: ${err.stack}`);
       });
-  }
+  },
+  addTag(tags) {
+    const promises = tags.map((tag) => {
+      const query = 'INSERT INTO tags(tag) VALUES ($1) ON CONFLICT DO NOTHING';
+      const values = [tag];
+      return pool.query(query, values);
+    });
+    return Promise.all(promises);
+  },
+  addJunction(id, tags) {
+    const promises = tags.map((tag) => {
+      const query = 'INSERT INTO posts_tags (post_id, tag_id) VALUES($1, $2)';
+      const values = [id, tag];
+      return pool.query(query, values);
+    });
+    return Promise.all(promises);
+  },
+  async addPostTwo(title, url, tags) {
+    const client = await pool.connect();
+    await client.query('BEGIN');
+    const uploadQuery = 'INSERT INTO posts(title, url) VALUES($1, $2) RETURNING *';
+    const uploadValues = [title, url];
+    const uploadResponse = await client.query(uploadQuery, uploadValues);
+    const postId = uploadResponse.rows[0].id;
+    if (tags.length) {
+      const tagsPromises = tags.map((tag) => {
+        const tagQuery = 'INSERT INTO tags(tag) VALUES ($1) ON CONFLICT DO NOTHING';
+        const tagValues = [tag];
+        return client.query(tagQuery, tagValues);
+      });
+
+      await Promise.all(tagsPromises);
+
+      const junctionPromises = tags.map((tag) => {
+        const junctionQuery = 'INSERT INTO posts_tags (post_id, tag_id) VALUES ($1, (SELECT id FROM tags WHERE tag=$2))';
+        const junctionValues = [postId, tag];
+        return client.query(junctionQuery, junctionValues);
+      });
+
+      await Promise.all(junctionPromises);
+    }
+    await client.query('COMMIT');
+    await client.release();
+  },
 };

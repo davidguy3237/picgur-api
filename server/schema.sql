@@ -26,7 +26,7 @@ CREATE TABLE comments (
 
 CREATE TABLE tags (
   id SERIAL,
-  tag TEXT NOT NULL,
+  tag TEXT NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
