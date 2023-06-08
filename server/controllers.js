@@ -1,5 +1,5 @@
-const models = require('./models');
 const cloudinary = require('cloudinary').v2;
+const models = require('./models');
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -17,8 +17,9 @@ async function handleUpload(file) {
 module.exports = {
   getAllPosts(req, res) {
     const search = req.query.search || '';
+    const sort = req.query.sort || 'likes DESC';
     models
-      .getAllPosts(search)
+      .getAllPosts(search, sort)
       .then((results) => res.json(results));
   },
   async addPost(req, res) {
