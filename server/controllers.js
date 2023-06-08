@@ -54,4 +54,16 @@ module.exports = {
 
     Promise.all(promises).then(() => res.sendStatus(201));
   },
+  getTagsForId(req, res) {
+    const { id } = req.query;
+    models
+      .getTagsForId(id)
+      .then((results) => res.json(results));
+  },
+  getPostsByTags(req, res) {
+    const { tag } = req.query;
+    models
+      .getPostsByTags(tag)
+      .then((results) => res.json(results));
+  },
 };

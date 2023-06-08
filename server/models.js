@@ -67,4 +67,24 @@ module.exports = {
         throw new Error(`PROBLEM UPDATING DISLIKES: ${err.stack}`);
       });
   },
+  getTagsForId(id) {
+    const query = 'SELECT tags.tag FROM tags JOIN posts_tags ON tags.id = posts_tags.tag_id WHERE posts_tags.post_id = $1';
+    const values = [id];
+    return pool
+      .query(query, values)
+      .then((results) => results.rows)
+      .catch((err) => {
+        throw new Error(`PROBLEM GETTING TAGS FOR ID ${id}: ${err.stack}`);
+      });
+  },
+  getPostsByTags(tag) {
+    const query = 'SELECT posts.* FROM posts JOIN posts_tags on posts.id = posts_tags.post_id WHERE posts_tags.tag_id = (SELECT id FROM tags WHERE tags.tag = $1)';
+    const values = [tag];
+    return pool
+      .query(query, values)
+      .then((results) => results.rows)
+      .catch((err) => {
+        throw new Error(`PROBLEM GETTING POSTS BY ${tag}: ${err.stack}`);
+      });
+  },
 };

@@ -17,6 +17,8 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 app.get('/api/posts', controllers.getAllPosts);
+app.get('/api/tags', controllers.getTagsForId);
+app.get('/api/posts-by-tag', controllers.getPostsByTags);
 app.put('/api/views', controllers.incrementViewCount);
 app.put('/api/likes', controllers.updateLikes);
 app.post('/api/upload', upload.single('file'), controllers.addPost);
